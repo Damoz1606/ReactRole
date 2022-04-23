@@ -7,6 +7,7 @@ import { login } from '../../services/user.service';
 import { PRIMARY } from '../../style/color';
 import { ICON_SIZE, theme } from '../../style/theme';
 import { toastPromise } from '../../utils/toast-manager';
+import { setupToken } from '../../utils/token-interceptor';
 import { LOGIN_MESSAGES } from '../../utils/utils';
 
 const TITLE_PAGE = "Log in"
@@ -26,11 +27,16 @@ function Login() {
   }
 
   const handleAccess = async () => {
-    const response = (await login(loginState)).data;
-    SessionManager.getInstance().setUser(response.user);
-    SessionManager.getInstance().setToken(response.token);
-    navigate('/home');
-    return true;
+    try {
+      const response = (await login(loginState)).data;
+      SessionManager.getInstance().setRole(response.user);
+      SessionManager.getInstance().setToken(response.token);
+      navigate('/home');
+      return true;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

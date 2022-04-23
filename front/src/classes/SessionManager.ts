@@ -1,11 +1,14 @@
-import { PERMISSIONS, ROLES } from "../utils/PermissionMap";
+import { PERMISSIONS } from "../utils/PermissionMap";
+import { getRole, removeRole, setupRole } from "../utils/role-interceptor";
+import { getToken, removeToken, setupToken } from "../utils/token-interceptor";
+import { ROLE } from "../utils/utils";
 import { User } from "./User";
 
 export class SessionManager {
     static instance: SessionManager;
 
-    token: string;
-    user: User | null;
+    token: string | null;
+    role: string | null;
 
     static getInstance(): SessionManager {
         if (!SessionManager.instance) {
@@ -15,35 +18,52 @@ export class SessionManager {
     }
 
     private constructor() {
-        this.token = "";
-        this.user = null;
+        this.token = null;
+        this.role = null;
     }
 
     setToken = (token: string) => {
         this.token = token;
+        setupToken(token);
     }
 
     getToken = () => {
-        return this.token;
+        if(!this.token) {
+            this.token = getToken();
+        }
+        return this.token || '';
     }
 
-    setUser = (user: User) => {
-        this.user = user;
-    }
-
-    getUser = () => {
-        return this.user;
+    setRole = (user: User) => {
+        this.role = user.role;
+        setupRole(this.role);
     }
 
     getRole = () => {
-        return this.user ? this.user.role : ROLES.user;
+        if(!this.role) {
+            this.role = getRole();
+        }
+        return this.role ? this.role : ROLE.user;
     }
 
     getPermissions = () => {
-        return this.user ? PERMISSIONS[this.user.role] : PERMISSIONS[ROLES.user];
+        return this.role ? PERMISSIONS[this.role] : PERMISSIONS[ROLE.user];
+    }
+
+    logout = () => {
+        this.token = null;
+        this.role = null;
+        removeRole();
+        removeToken();
     }
 
     isLoggedIn = () => {
-        return this.user !== null && this.token !== "";
+        if(!this.token) {
+            this.token = getToken();
+        }
+        if(!this.role) {
+            this.role = getRole();
+        }
+        return this.role && this.token;
     }
 }

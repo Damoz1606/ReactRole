@@ -9,11 +9,11 @@ export class NoteManager {
         return NoteManager.instance;
     }
 
-    private notes: Note[] = [];
+    private notes: Note[]|null = null;
 
     private constructor() {}
 
-    getNotes = (): Note[] => {
+    getNotes = () => {
         return this.notes;
     }
 
@@ -22,10 +22,11 @@ export class NoteManager {
     }
 
     addNote = (note: Note) => {
-        this.notes.push(note);
+        this.notes && this.notes.push(note);
     }
 
     removeNote = (note: Note) => {
+        if(!this.notes) return;
         this.notes = this.notes.filter(n => `${n._id}` !== `${note._id}`);
     }
 }

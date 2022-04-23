@@ -2,10 +2,9 @@ import { NotesOutlined, PhotoCameraBackOutlined } from '@mui/icons-material';
 import React, { useEffect } from 'react'
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { NavigationItem } from '../../classes/NavigationItem';
-import { SessionManager } from '../../classes/SessionManager';
+import { SessionManager } from '../../managers/SessionManager';
 import Appbar from '../../components/Appbar';
-import { PRIMARY } from '../../style/color';
-import { ICON_SIZE, theme } from '../../style/theme';
+import { theme } from '../../style/theme';
 import Images from './Images';
 import Notes from './Notes';
 

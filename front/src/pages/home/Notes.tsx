@@ -1,69 +1,45 @@
 import { Add } from '@mui/icons-material';
-import { Backdrop, Box, Card, CardContent, Fade, Modal, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import { Backdrop, Box, Fade, Modal, Typography } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 import { Note } from '../../classes/Note';
 import ButtonIncrese from '../../components/ButtonIncrese';
 import Float from '../../components/Float';
 import NoteComponent from '../../components/Note';
 import NoteForm from '../../components/NoteForm';
+import { NoteManager } from '../../managers/NoteManager';
+import { getNotes } from '../../services/note.service';
 import { theme } from '../../style/theme'
-import { ROLE } from '../../utils/utils'
+import { toastPromise } from '../../utils/toast-manager';
+import { NOTE_MESSAGES } from '../../utils/utils'
 
 function Notes() {
 
-  const [notes, setnotes] = useState<Note[]>([{
-    _id: '1',
-    title: 'Note 1',
-    note: 'This is note 1',
-    author: {
-      _id: '1',
-      email: '',
-      role: ROLE.admin,
-      profile: {
-        name: 'John Doe',
-      }
-    },
-  },
-  {
-    _id: '1',
-    title: 'Note 1',
-    note: 'This is note 1',
-    author: {
-      _id: '1',
-      email: '',
-      role: ROLE.admin,
-      profile: {
-        name: 'John Doe',
-      }
-    },
-  },
-  {
-    _id: '1',
-    title: 'Note 1',
-    note: 'This is note 1',
-    author: {
-      _id: '1',
-      email: '',
-      role: ROLE.admin,
-      profile: {
-        name: 'John Doe',
-      }
-    },
-  }, {
-    _id: '1',
-    title: 'Note 1',
-    note: 'This is note 1',
-    author: {
-      _id: '1',
-      email: '',
-      role: ROLE.admin,
-      profile: {
-        name: 'John Doe',
-      }
-    },
-  }]);
-
+  const [notes, setnotes] = useState<Note[]>([]);
   const [open, setopen] = useState<boolean>(false);
+
+  useEffect(() => {
+    toastPromise({
+      success: NOTE_MESSAGES.GETTING_SUCCESS,
+      pending: NOTE_MESSAGES.GETTING_PENDING,
+      error: NOTE_MESSAGES.GETTING_ERROR
+    }, getAllNotes());
+    return () => { }
+  }, [])
+
+
+  const getAllNotes = async () => {
+    if (NoteManager.getInstance().getNotes()) {
+      setnotes(NoteManager.getInstance().getNotes() as Note[]);
+      return;
+    }
+    try {
+      const response = (await getNotes()).data;
+      setnotes(response.notes);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
 
   const handleOpen = () => setopen(true);
   const handleClose = () => setopen(false);

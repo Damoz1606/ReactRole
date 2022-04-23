@@ -1,5 +1,5 @@
 import React from 'react'
-import { SessionManager } from '../classes/SessionManager';
+import { SessionManager } from '../managers/SessionManager';
 import { PERMISSIONS, ROLES } from "../utils/PermissionMap";
 
 interface PermissionProps {

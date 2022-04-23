@@ -9,10 +9,10 @@ export class ImageManager {
         return ImageManager.instance;
     }
 
-    private images: Image[] = [];
+    private images: Image[]|null = null;
     private constructor() {}
 
-    getImages = (): Image[] => {
+    getImages = () => {
         return this.images;
     }
 
@@ -21,10 +21,11 @@ export class ImageManager {
     }
 
     addImage = (image: Image) => {
-        this.images.push(image);
+        this.images && this.images.push(image);
     }
 
     removeImage = (image: Image) => {
+        if(!this.images) return;
         this.images = this.images.filter(img => `${img._id}` !== `${image._id}`);
     }
 }

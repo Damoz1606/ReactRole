@@ -7,7 +7,6 @@ import { login } from '../../services/user.service';
 import { PRIMARY } from '../../style/color';
 import { ICON_SIZE, theme } from '../../style/theme';
 import { toastPromise } from '../../utils/toast-manager';
-import { setupToken } from '../../utils/token-interceptor';
 import { LOGIN_MESSAGES } from '../../utils/utils';
 
 const TITLE_PAGE = "Log in"

@@ -2,7 +2,7 @@ import { AccountCircleOutlined } from '@mui/icons-material';
 import { ButtonBase, Card, CardContent, Typography } from '@mui/material';
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
-import { SessionManager } from '../../classes/SessionManager';
+import { SessionManager } from '../../managers/SessionManager';
 import { login } from '../../services/user.service';
 import { PRIMARY } from '../../style/color';
 import { ICON_SIZE, theme } from '../../style/theme';

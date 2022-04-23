@@ -2,7 +2,7 @@ import { PERMISSIONS } from "../utils/PermissionMap";
 import { getRole, removeRole, setupRole } from "../utils/role-interceptor";
 import { getToken, removeToken, setupToken } from "../utils/token-interceptor";
 import { ROLE } from "../utils/utils";
-import { User } from "./User";
+import { User } from "../classes/User";
 
 export class SessionManager {
     static instance: SessionManager;

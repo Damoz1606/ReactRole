@@ -14,6 +14,7 @@ interface Props {
     required?: boolean;
     value?: string;
     accept?: string;
+    onChange?: (file: File) => void;
 }
 function InputImage(props: Props) {
 
@@ -42,6 +43,7 @@ function InputImage(props: Props) {
             const reader = new FileReader();
             reader.onload = (e: any) => setselected(e.target.result as string);
             reader.readAsDataURL(event.files[0]);
+            props.onChange && props.onChange(event.files[0]);
         }
     }
 

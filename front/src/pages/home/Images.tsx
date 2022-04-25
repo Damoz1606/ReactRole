@@ -10,7 +10,7 @@ import ImageForm from '../../components/ImageForm'
 import { Image } from '../../classes/Image'
 import { ImageManager } from '../../managers/ImageManager'
 import { getImages } from '../../services/image.service'
-import { toastPromise } from '../../utils/toast-manager'
+import { toastError, toastPromise } from '../../utils/toast-manager'
 import { IMAGE_MESSAGES } from '../../utils/utils'
 
 function Images() {
@@ -19,11 +19,7 @@ function Images() {
   const [open, setopen] = useState<boolean>(false);
 
   useEffect(() => {
-    toastPromise({
-      success: IMAGE_MESSAGES.GETTING_SUCCESS,
-      pending: IMAGE_MESSAGES.GETTING_PENDING,
-      error: IMAGE_MESSAGES.GETTING_ERROR
-    }, getAllImages());
+    getAllImages();
     return () => { }
   }, [])
 
@@ -37,9 +33,17 @@ function Images() {
       const response = (await getImages()).data;
       setimages(response.images);
     } catch (error) {
-      console.log(error);
-      throw error;
+      toastError(IMAGE_MESSAGES.GETTING_ERROR);
     }
+  }
+
+  const handleSubmit = (image: Image) => {
+    setimages([...images, image]);
+    handleClose();
+  }
+
+  const handleDelete = (image: Image) => {
+    setimages(images.filter(n => `${n._id}` !== `${image._id}`));
   }
 
   const handleOpen = () => setopen(true);
@@ -51,7 +55,10 @@ function Images() {
       <div style={{ ...theme.spaceEvenly, ...theme.row, width: '100%', marginTop: '1rem', flexWrap: 'wrap' }}>
         {images.map((image, index) => {
           return <>
-            <ImageComponent image={image} key={index} />
+            <ImageComponent 
+            onDelete={handleDelete}
+            image={image} 
+            key={index} />
           </>
         })}
       </div>
@@ -79,7 +86,7 @@ function Images() {
           maxWidth: '500px',
           width: '100%',
         }}>
-          <ImageForm />
+          <ImageForm onSubmit={handleSubmit} />
         </Box>
       </Fade>
     </Modal>

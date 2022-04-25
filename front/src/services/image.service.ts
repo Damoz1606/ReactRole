@@ -11,8 +11,10 @@ export const getImages = async () => {
     });
 }
 
-export const postImage = async (image: Image) => {
-    return await axios.post(`${URI}/images`, imageConverter.toJSON(image), {
+export const postImage = async (image: File) => {
+    const form = new FormData();
+    form.append("image", image);
+    return await axios.post(`${URI}/images`, form, {
         headers: {
             Authorization: `Bearer ${SessionManager.getInstance().getToken()}`
         }
@@ -35,8 +37,10 @@ export const getImage = async (id: string) => {
     });
 }
 
-export const putImage = async (id: string, image: Image) => {
-    return await axios.put(`${URI}/images/${id}`, imageConverter.toJSON(image), {
+export const putImage = async (id: string, image: File) => {
+    const form = new FormData();
+    form.append("image", image);
+    return await axios.put(`${URI}/images/${id}`, form, {
         headers: {
             Authorization: `Bearer ${SessionManager.getInstance().getToken()}`
         }

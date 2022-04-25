@@ -5,8 +5,9 @@ import { Note as NoteClass } from '../classes/Note'
 import { deleteNote } from '../services/note.service';
 import { theme } from '../style/theme';
 import CardBackdrop from './CardBackdrop';
-import { toastPromise } from '../utils/toast-manager';
+import { toastError, toastPromise } from '../utils/toast-manager';
 import NoteForm from './NoteForm';
+import { NOTE_MESSAGES } from '../utils/utils';
 
 interface Props {
     note: NoteClass;
@@ -17,9 +18,9 @@ function Note(props: Props) {
 
     const [open, setopen] = useState<boolean>(false);
     const [note, setnote] = useState<NoteClass>(props.note);
-    
-    const container:RefObject<HTMLDivElement> = createRef();
-    
+
+    const container: RefObject<HTMLDivElement> = createRef();
+
     const handleOpen = () => setopen(true);
     const handleClose = () => setopen(false);
 
@@ -42,7 +43,7 @@ function Note(props: Props) {
     const handleDelete = async () => {
         try {
             await deleteNote(note._id as string);
-            if (container.current){
+            if (container.current) {
                 container.current.style.transition = 'all 0.5s ease-in-out';
                 container.current.style.transform = 'scale(0)';
             }
@@ -50,7 +51,7 @@ function Note(props: Props) {
                 props.onDelete && props.onDelete(note);
             }, 500);
         } catch (error: any) {
-            throw error;
+            toastError(NOTE_MESSAGES.DELETE_ERROR);
         }
     }
 

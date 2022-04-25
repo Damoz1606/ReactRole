@@ -1,29 +1,32 @@
 import { Close, Visibility } from '@mui/icons-material';
-import { Box, ButtonBase, Fade, Modal, Typography } from '@mui/material'
-import React, { CSSProperties, useEffect, useState } from 'react'
+import { Backdrop, Box, ButtonBase, Fade, Modal, Typography } from '@mui/material'
+import React, { createRef, CSSProperties, RefObject, useEffect, useState } from 'react'
 import { Image as ImageClass } from '../classes/Image';
+import { deleteImage } from '../services/image.service';
+import { toastError } from '../utils/toast-manager';
+import { IMAGE_MESSAGES } from '../utils/utils';
 import CardBackdrop from './CardBackdrop'
 import ImageForm from './ImageForm';
 
-const image: CSSProperties = {
+const style: CSSProperties = {
     width: '100%',
     borderRadius: '5px',
 }
 
 interface Props {
     image: ImageClass;
+    onDelete?: (image: ImageClass) => void;
 }
 
 function Image(props: Props) {
 
     const [open, setopen] = useState<boolean>(false);
+    const [image, setimage] = useState<ImageClass>(props.image);
+
+    const container: RefObject<HTMLDivElement> = createRef();
 
     const handleOpen = () => setopen(true);
     const handleClose = () => setopen(false);
-
-    useEffect(() => {
-        return () => { }
-    }, [])
 
     const backdropContent = () => {
         return <>
@@ -32,14 +35,32 @@ function Image(props: Props) {
         </>
     }
 
-    const handleDelete = () => {
+    const handleUpdate = (data: ImageClass) => {
+        setimage(data);
+        handleClose();
+    }
 
+    const handleDelete = async () => {
+        try {
+            await deleteImage(image._id as string);
+            if (container.current) {
+                container.current.style.transition = 'all 0.5s ease-in-out';
+                container.current.style.transform = 'scale(0)';
+            }
+            setTimeout(() => {
+                props.onDelete && props.onDelete(image);
+            }, 500);
+        } catch (error: any) {
+            toastError(IMAGE_MESSAGES.DELETE_ERROR);
+        }
     }
 
     return <>
-        <CardBackdrop backdropContent={backdropContent()}>
-            <img style={image} src={`data:${props.image.image.contentType};base64,${Buffer.from(props.image.image.data).toString('base64')}`} />
-        </CardBackdrop>
+        <div ref={container}>
+            <CardBackdrop backdropContent={backdropContent()}>
+                <img style={style} src={`data:${image.image.contentType};base64,${Buffer.from(image.image.data).toString('base64')}`} />
+            </CardBackdrop>
+        </div>
         <Modal open={open}
             onClose={handleClose}
             closeAfterTransition>
@@ -52,7 +73,9 @@ function Image(props: Props) {
                     maxWidth: '500px',
                     width: '100%',
                 }}>
-                    <ImageForm image={props.image} />
+                    <ImageForm
+                        image={image}
+                        onSubmit={handleUpdate} />
                 </Box>
             </Fade>
         </Modal>

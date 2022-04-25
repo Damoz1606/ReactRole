@@ -1,6 +1,6 @@
 import { Add } from '@mui/icons-material';
 import { Backdrop, Box, Fade, Modal, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { FormEvent, useEffect, useState } from 'react'
 import { Note } from '../../classes/Note';
 import ButtonIncrese from '../../components/ButtonIncrese';
 import Float from '../../components/Float';
@@ -9,7 +9,7 @@ import NoteForm from '../../components/NoteForm';
 import { NoteManager } from '../../managers/NoteManager';
 import { getNotes } from '../../services/note.service';
 import { theme } from '../../style/theme'
-import { toastPromise } from '../../utils/toast-manager';
+import { toastError, toastPromise } from '../../utils/toast-manager';
 import { NOTE_MESSAGES } from '../../utils/utils'
 
 function Notes() {
@@ -18,11 +18,7 @@ function Notes() {
   const [open, setopen] = useState<boolean>(false);
 
   useEffect(() => {
-    toastPromise({
-      success: NOTE_MESSAGES.GETTING_SUCCESS,
-      pending: NOTE_MESSAGES.GETTING_PENDING,
-      error: NOTE_MESSAGES.GETTING_ERROR
-    }, getAllNotes());
+    getAllNotes();
     return () => { }
   }, [])
 
@@ -36,9 +32,17 @@ function Notes() {
       const response = (await getNotes()).data;
       setnotes(response.notes);
     } catch (error) {
-      console.log(error);
-      throw error;
+      toastError(NOTE_MESSAGES.GETTING_ERROR);
     }
+  }
+
+  const handleSubmit = (note: Note) => {
+    setnotes([...notes, note]);
+    handleClose();
+  }
+
+  const handleDelete = (note: Note) => {
+    setnotes(notes.filter(n => `${n._id}` !== `${note._id}`));
   }
 
   const handleOpen = () => setopen(true);
@@ -50,7 +54,9 @@ function Notes() {
       <div style={{ ...theme.spaceEvenly, ...theme.row, width: '100%', marginTop: '1rem', flexWrap: 'wrap' }}>
         {notes.map((note, index) => {
           return <>
-            <NoteComponent note={note} key={index} />
+            <NoteComponent
+              note={note} key={index}
+              onDelete={handleDelete} />
           </>
         })}
       </div>
@@ -78,7 +84,7 @@ function Notes() {
           maxWidth: '500px',
           width: '100%',
         }}>
-          <NoteForm />
+          <NoteForm onSubmit={handleSubmit} />
         </Box>
       </Fade>
     </Modal>

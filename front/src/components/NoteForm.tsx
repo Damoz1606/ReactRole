@@ -1,8 +1,11 @@
 import { ButtonBase, Card, CardContent, TextareaAutosize, Typography } from '@mui/material';
-import React, { useEffect } from 'react'
-import { Note } from '../classes/Note';
+import React, { ChangeEvent, FormEvent, useEffect } from 'react'
+import { Note, noteConverter } from '../classes/Note';
+import { postNote, putNote } from '../services/note.service';
 import { BACKGROUND, PRIMARY } from '../style/color';
 import { theme } from '../style/theme';
+import { toastPromise } from '../utils/toast-manager';
+import { NOTE_MESSAGES } from '../utils/utils';
 
 const input = {
     padding: "0.5rem 1rem",
@@ -26,9 +29,43 @@ function NoteForm(props: Props) {
         return () => { }
     }, [props.note]);
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleChange = (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+        setNote({ ...note, [event.target.name]: event.target.value });
+    }
+
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        props.onSubmit && props.onSubmit(note);
+        if (props.note) {
+            toastPromise({
+                success: NOTE_MESSAGES.UPDATE_SUCCESS,
+                pending: NOTE_MESSAGES.UPDATE_PENDING,
+                error: NOTE_MESSAGES.UPDATE_ERROR 
+            }, updateNote(note));
+        } else {
+            toastPromise({
+                success: NOTE_MESSAGES.ADDING_SUCCESS,
+                pending: NOTE_MESSAGES.ADDING_PENDING,
+                error: NOTE_MESSAGES.ADDING_ERROR 
+            }, createNote(note));
+        }
+    }
+
+    const createNote = async (note: Note) => {
+        try {
+            const response = (await postNote(note)).data;
+            props.onSubmit && props.onSubmit(noteConverter.toObject(response.note));
+        } catch (error: any) {
+            throw error;
+        }
+    }
+
+    const updateNote = async (note: Note) => {
+        try {
+            const response = (await putNote(note._id as string, note)).data;
+            props.onSubmit && props.onSubmit(noteConverter.toObject(response.note));
+        } catch (error: any) {
+            throw error;
+        }
     }
 
     return <>
@@ -36,17 +73,25 @@ function NoteForm(props: Props) {
             <CardContent>
                 <form onSubmit={handleSubmit} style={{ ...theme.container, ...theme.column }}>
                     <div style={{ display: 'flex', justifyContent: 'end', width: '100%' }}>
-                        <ButtonBase style={{ width: 'auto', backgroundColor: '#FFF', color: PRIMARY.MAIN, padding: '0.5rem', borderRadius: '10px' }}>
+                        <ButtonBase type='submit' style={{ width: 'auto', backgroundColor: '#FFF', color: PRIMARY.MAIN, padding: '0.5rem', borderRadius: '10px' }}>
                             <Typography variant='subtitle2'>
-                                {props.note ? 'Update' : 'Create'}
+                                {note ? 'Update' : 'Create'}
                             </Typography>
                         </ButtonBase>
                     </div>
-                    <input type="text" style={{ ...input, fontSize: '1.5rem', fontWeight: 'bold' }} value={props.note && props.note.title} placeholder='Title' />
+                    <input
+                        type="text"
+                        name="title"
+                        style={{ ...input, fontSize: '1.5rem', fontWeight: 'bold' }}
+                        value={note && note.title}
+                        onChange={handleChange}
+                        placeholder='Title' />
                     <textarea
                         style={{ ...input, resize: 'none', height: '10rem' }}
+                        name="note"
                         placeholder='Note'
-                        value={props.note && props.note.note} />
+                        onChange={handleChange}
+                        value={note && note.note} required />
                 </form>
             </CardContent>
         </Card>

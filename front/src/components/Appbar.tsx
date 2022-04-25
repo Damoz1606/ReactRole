@@ -35,7 +35,7 @@ function Appbar(props: Props) {
             </div>
             {props.items.map((item, index) => {
                 return <>
-                    <Link to={item.path} style={{ width: ICON_SIZE, height: ICON_SIZE, color: PRIMARY.CONTRAST }}>{item.icon}</Link>
+                    <Link to={item.path} style={{ width: ICON_SIZE, height: ICON_SIZE, color: PRIMARY.CONTRAST }} key={index}>{item.icon}</Link>
                 </>
             })}
             <div style={{ position: 'absolute', bottom: 0 }}>

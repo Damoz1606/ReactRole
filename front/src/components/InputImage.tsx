@@ -1,5 +1,5 @@
 import { ButtonBase, Card, CardContent } from '@mui/material'
-import React, { createRef, RefObject, useState } from 'react'
+import React, { createRef, RefObject, useEffect, useState } from 'react'
 import { BORDER_RADIUS } from '../style/theme'
 import { PRIMARY } from '../style/color'
 import { InsertPhotoOutlined } from '@mui/icons-material'
@@ -10,6 +10,7 @@ const iconSize = 275 / 5;
 interface Props {
     id: string;
     name: string;
+    src?: string;
     required?: boolean;
     value?: string;
     accept?: string;
@@ -20,6 +21,14 @@ function InputImage(props: Props) {
 
     const [file, setfile] = useState<File | null>(null);
     const [selected, setselected] = useState<string | null>();
+
+    useEffect(() => {
+        if(props.src) {
+            setselected(props.src);
+        }
+      return () => {}
+    }, [props.src])
+    
 
     const onClick = () => {
         if (ref.current) {

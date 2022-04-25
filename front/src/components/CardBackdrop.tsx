@@ -27,7 +27,7 @@ function CardBackdrop(props: Props) {
         <Card
             elevation={5}
             style={{
-                margin: '1rem 0.5rem',
+                margin: '0.5rem 0.25rem',
                 cursor: 'pointer'
             }}
             onMouseEnter={activeBackdrop}

@@ -50,7 +50,7 @@ function Notes() {
       <div style={{ ...theme.spaceEvenly, ...theme.row, width: '100%', marginTop: '1rem', flexWrap: 'wrap' }}>
         {notes.map((note, index) => {
           return <>
-            <NoteComponent note={note} />
+            <NoteComponent note={note} key={index} />
           </>
         })}
       </div>

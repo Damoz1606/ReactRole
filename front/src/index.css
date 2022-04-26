@@ -37,3 +37,14 @@ button {
     backdrop-filter: blur(2px);
     transition: all 0.3s ease-in-out;
 }
+
+.nav-link {
+    padding: 0.25rem auto;
+    color: #fff;
+    background-color: #007bff;
+}
+
+.nav-link .active {
+    background-color: #fff;
+    color: #007bff;
+}

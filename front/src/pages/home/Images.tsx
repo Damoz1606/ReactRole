@@ -11,7 +11,8 @@ import { Image } from '../../classes/Image'
 import { ImageManager } from '../../managers/ImageManager'
 import { getImages } from '../../services/image.service'
 import { toastError, toastPromise } from '../../utils/toast-manager'
-import { IMAGE_MESSAGES } from '../../utils/utils'
+import { IMAGE_MESSAGES, ROLE } from '../../utils/utils'
+import { RoleGate } from '../../providers/PermissionGate'
 
 function Images() {
 
@@ -55,20 +56,22 @@ function Images() {
       <div style={{ ...theme.spaceEvenly, ...theme.row, width: '100%', marginTop: '1rem', flexWrap: 'wrap' }}>
         {images.map((image, index) => {
           return <>
-            <ImageComponent 
-            onDelete={handleDelete}
-            image={image} 
-            key={index} />
+            <ImageComponent
+              onDelete={handleDelete}
+              image={image}
+              key={index} />
           </>
         })}
       </div>
-      <Float position='bottom-right'>
-        <ButtonIncrese
-          icon={<Add />}
-          onClick={handleOpen}>
-          <Typography variant="subtitle1">Add Image</Typography>
-        </ButtonIncrese>
-      </Float>
+      <RoleGate roles={[ROLE.admin, ROLE.author]}>
+        <Float position='bottom-right'>
+          <ButtonIncrese
+            icon={<Add />}
+            onClick={handleOpen}>
+            <Typography variant="subtitle1">Add Image</Typography>
+          </ButtonIncrese>
+        </Float>
+      </RoleGate>
     </div>
     <Modal open={open}
       onClose={handleClose}

@@ -1,11 +1,12 @@
 import { ButtonBase, Card, CardContent, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { Image, imageConverter } from '../classes/Image';
+import { RoleGate } from '../providers/PermissionGate';
 import { postImage, putImage } from '../services/image.service';
 import { BACKGROUND, PRIMARY } from '../style/color';
 import { theme } from '../style/theme';
 import { toastError, toastPromise } from '../utils/toast-manager';
-import { IMAGE_MESSAGES } from '../utils/utils';
+import { IMAGE_MESSAGES, ROLE } from '../utils/utils';
 import InputImage from './InputImage';
 
 const input = {
@@ -23,7 +24,7 @@ type Props = {
 function ImageForm(props: Props) {
 
     const [image, setImage] = useState<Image | null>();
-    const [file, setfile] = useState<File|null>(null);
+    const [file, setfile] = useState<File | null>(null);
 
     useEffect(() => {
         if (props.image) {
@@ -77,20 +78,22 @@ function ImageForm(props: Props) {
         <Card elevation={0}>
             <CardContent>
                 <form onSubmit={handleSubmit} style={{ ...theme.container, ...theme.column }}>
-                    <div style={{ display: 'flex', justifyContent: 'end', width: '100%' }}>
-                        <ButtonBase type='submit' style={{ width: 'auto', backgroundColor: '#FFF', color: PRIMARY.MAIN, padding: '0.5rem', borderRadius: '10px' }}>
-                            <Typography variant='subtitle2'>
-                                {image ? 'Update' : 'Create'}
-                            </Typography>
-                        </ButtonBase>
-                    </div>
-                    <div style={{...theme.center, ...theme.row}}>
-                        <InputImage 
-                        id='image' 
-                        name='image' 
-                        onChange={handleChange}
-                        src={image? `data:${image.image.contentType};base64,${Buffer.from(image.image.data).toString('base64')}` : undefined} />
-                        <div style={{...theme.column, marginLeft: '1rem '}}>
+                    <RoleGate roles={[ROLE.admin, ROLE.author]}>
+                        <div style={{ display: 'flex', justifyContent: 'end', width: '100%' }}>
+                            <ButtonBase type='submit' style={{ width: 'auto', backgroundColor: '#FFF', color: PRIMARY.MAIN, padding: '0.5rem', borderRadius: '10px' }}>
+                                <Typography variant='subtitle2'>
+                                    {image ? 'Update' : 'Create'}
+                                </Typography>
+                            </ButtonBase>
+                        </div>
+                    </RoleGate>
+                    <div style={{ ...theme.center, ...theme.row }}>
+                        <InputImage
+                            id='image'
+                            name='image'
+                            onChange={handleChange}
+                            src={image ? `data:${image.image.contentType};base64,${Buffer.from(image.image.data).toString('base64')}` : undefined} />
+                        <div style={{ ...theme.column, marginLeft: '1rem ' }}>
                             <Typography marginY={'0.5rem'} variant='subtitle1'>{image ? image.name : 'No hay imagen seleccionada'}</Typography>
                             {image && <Typography marginY={'0.5rem'} variant='subtitle1'>{image ? image.image.contentType : 'No hay imagen seleccionada'}</Typography>}
                         </div>

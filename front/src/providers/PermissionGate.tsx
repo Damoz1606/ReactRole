@@ -26,7 +26,7 @@ const hasRole = ({ role, roles = [] }: any) => {
 
 export const RoleGate = (props: RoleProps) => {
     const role = SessionManager.getInstance().getRole();
-    const roles = props.roles || [ROLES.admin, ROLES.user, ROLES.user];
+    const roles = props.roles || [ROLES.admin, ROLES.author, ROLES.user];
     return hasRole({ role, roles }) ? <>{props.children} </> : null;
 }
 

@@ -1,11 +1,12 @@
 import { ButtonBase, Card, CardContent, TextareaAutosize, Typography } from '@mui/material';
 import React, { ChangeEvent, FormEvent, useEffect } from 'react'
 import { Note, noteConverter } from '../classes/Note';
+import { RoleGate } from '../providers/PermissionGate';
 import { postNote, putNote } from '../services/note.service';
 import { BACKGROUND, PRIMARY } from '../style/color';
 import { theme } from '../style/theme';
 import { toastPromise } from '../utils/toast-manager';
-import { NOTE_MESSAGES } from '../utils/utils';
+import { NOTE_MESSAGES, ROLE } from '../utils/utils';
 
 const input = {
     padding: "0.5rem 1rem",
@@ -39,13 +40,13 @@ function NoteForm(props: Props) {
             toastPromise({
                 success: NOTE_MESSAGES.UPDATE_SUCCESS,
                 pending: NOTE_MESSAGES.UPDATE_PENDING,
-                error: NOTE_MESSAGES.UPDATE_ERROR 
+                error: NOTE_MESSAGES.UPDATE_ERROR
             }, updateNote(note));
         } else {
             toastPromise({
                 success: NOTE_MESSAGES.ADDING_SUCCESS,
                 pending: NOTE_MESSAGES.ADDING_PENDING,
-                error: NOTE_MESSAGES.ADDING_ERROR 
+                error: NOTE_MESSAGES.ADDING_ERROR
             }, createNote(note));
         }
     }
@@ -72,13 +73,15 @@ function NoteForm(props: Props) {
         <Card elevation={0}>
             <CardContent>
                 <form onSubmit={handleSubmit} style={{ ...theme.container, ...theme.column }}>
-                    <div style={{ display: 'flex', justifyContent: 'end', width: '100%' }}>
-                        <ButtonBase type='submit' style={{ width: 'auto', backgroundColor: '#FFF', color: PRIMARY.MAIN, padding: '0.5rem', borderRadius: '10px' }}>
-                            <Typography variant='subtitle2'>
-                                {note ? 'Update' : 'Create'}
-                            </Typography>
-                        </ButtonBase>
-                    </div>
+                    <RoleGate roles={[ROLE.admin, ROLE.author]}>
+                        <div style={{ display: 'flex', justifyContent: 'end', width: '100%' }}>
+                            <ButtonBase type='submit' style={{ width: 'auto', backgroundColor: '#FFF', color: PRIMARY.MAIN, padding: '0.5rem', borderRadius: '10px' }}>
+                                <Typography variant='subtitle2'>
+                                    {note ? 'Update' : 'Create'}
+                                </Typography>
+                            </ButtonBase>
+                        </div>
+                    </RoleGate>
                     <input
                         type="text"
                         name="title"

@@ -2,9 +2,10 @@ import { Close, Visibility } from '@mui/icons-material';
 import { Backdrop, Box, ButtonBase, Fade, Modal, Typography } from '@mui/material'
 import React, { createRef, CSSProperties, RefObject, useEffect, useState } from 'react'
 import { Image as ImageClass } from '../classes/Image';
+import { RoleGate } from '../providers/PermissionGate';
 import { deleteImage } from '../services/image.service';
 import { toastError } from '../utils/toast-manager';
-import { IMAGE_MESSAGES } from '../utils/utils';
+import { IMAGE_MESSAGES, ROLE } from '../utils/utils';
 import CardBackdrop from './CardBackdrop'
 import ImageForm from './ImageForm';
 
@@ -31,7 +32,9 @@ function Image(props: Props) {
     const backdropContent = () => {
         return <>
             <ButtonBase style={{ borderRadius: '100%', padding: '0.5rem' }} onClick={handleOpen}><Visibility /></ButtonBase>
-            <ButtonBase style={{ borderRadius: '100%', padding: '0.5rem' }} onClick={handleDelete}><Close /></ButtonBase>
+            <RoleGate roles={[ROLE.admin]}>
+                <ButtonBase style={{ borderRadius: '100%', padding: '0.5rem' }} onClick={handleDelete}><Close /></ButtonBase>
+            </RoleGate>
         </>
     }
 

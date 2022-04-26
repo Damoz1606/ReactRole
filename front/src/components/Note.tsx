@@ -7,7 +7,8 @@ import { theme } from '../style/theme';
 import CardBackdrop from './CardBackdrop';
 import { toastError, toastPromise } from '../utils/toast-manager';
 import NoteForm from './NoteForm';
-import { NOTE_MESSAGES } from '../utils/utils';
+import { NOTE_MESSAGES, ROLE } from '../utils/utils';
+import { RoleGate } from '../providers/PermissionGate';
 
 interface Props {
     note: NoteClass;
@@ -27,11 +28,13 @@ function Note(props: Props) {
     const backdropContent = () => {
         return <>
             <ButtonBase style={{ borderRadius: '100%', padding: '0.5rem' }} onClick={handleOpen}><Visibility /></ButtonBase>
-            <ButtonBase style={{ borderRadius: '100%', padding: '0.5rem' }} onClick={() => toastPromise({
-                success: 'Note deleted successfully',
-                pending: 'Deleting note',
-                error: 'Error deleting note'
-            }, handleDelete())}><Close /></ButtonBase>
+            <RoleGate roles={[ROLE.admin]}>
+                <ButtonBase style={{ borderRadius: '100%', padding: '0.5rem' }} onClick={() => toastPromise({
+                    success: 'Note deleted successfully',
+                    pending: 'Deleting note',
+                    error: 'Error deleting note'
+                }, handleDelete())}><Close /></ButtonBase>
+            </RoleGate>
         </>
     }
 

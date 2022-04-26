@@ -11,7 +11,7 @@ export enum TEXT {
 }
 
 export enum PRIMARY {
-    MAIN = '#4F8FC0',
+    MAIN = '#0075cf',
     LIGHT = '',
     DARK = '',
     CONTRAST = '#FFFFFF'

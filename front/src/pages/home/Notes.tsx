@@ -7,10 +7,11 @@ import Float from '../../components/Float';
 import NoteComponent from '../../components/Note';
 import NoteForm from '../../components/NoteForm';
 import { NoteManager } from '../../managers/NoteManager';
+import { RoleGate } from '../../providers/PermissionGate';
 import { getNotes } from '../../services/note.service';
 import { theme } from '../../style/theme'
 import { toastError, toastPromise } from '../../utils/toast-manager';
-import { NOTE_MESSAGES } from '../../utils/utils'
+import { NOTE_MESSAGES, ROLE } from '../../utils/utils'
 
 function Notes() {
 
@@ -60,13 +61,15 @@ function Notes() {
           </>
         })}
       </div>
-      <Float position='bottom-right'>
-        <ButtonIncrese
-          icon={<Add />}
-          onClick={handleOpen}>
-          <Typography variant="subtitle1">Add Note</Typography>
-        </ButtonIncrese>
-      </Float>
+      <RoleGate roles={[ROLE.admin, ROLE.author]}>
+        <Float position='bottom-right'>
+          <ButtonIncrese
+            icon={<Add />}
+            onClick={handleOpen}>
+            <Typography variant="subtitle1">Add Note</Typography>
+          </ButtonIncrese>
+        </Float>
+      </RoleGate>
     </div>
     <Modal open={open}
       onClose={handleClose}
